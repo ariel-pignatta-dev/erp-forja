@@ -25,6 +25,27 @@ def workday(start: date, n_days: int, feriados: Optional[set] = None) -> date:
             days += 1
     return d
 
+def fecha_inicio_encadenada(
+    fecha_fin_anterior: date,
+    feriados: Optional[set] = None
+) -> date:
+    """
+    Devuelve el siguiente día laboral después de la fecha_fin_anterior.
+    Si la fecha cae en día no laboral, avanza hasta el próximo laboral.
+    """
+    if fecha_fin_anterior is None:
+        return None
+
+    fer = feriados if feriados is not None else FERIADOS_CACHE
+
+    # avanzar 1 día y buscar próximo laboral
+    siguiente = fecha_fin_anterior + timedelta(days=1)
+
+    while not es_dia_laboral(siguiente, fer):
+        siguiente += timedelta(days=1)
+
+    return siguiente
+
 def calcular_fecha_fin(
     fecha_inicio: date,
     hs_restantes: float,
