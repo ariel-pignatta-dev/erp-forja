@@ -16,7 +16,7 @@ load_dotenv()
 from models import (Base, Usuario, Celula, SKU, Feriado, Orden,
                     CargaAvance, AuditLog, EstadoOrden, RolUsuario)
 from logic import (calcular_fecha_fin, fecha_inicio_encadenada,
-                   detectar_conflicto, calcular_acumulados)
+                   detectar_solape, calcular_acumulados)
 
 DATABASE_URL = os.getenv("DATABASE_URL","postgresql://postgres:postgres@localhost/erp_forja")
 SECRET_KEY   = os.getenv("SECRET_KEY","dev-secret")
