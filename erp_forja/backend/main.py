@@ -379,7 +379,7 @@ def get_conflictos(db=Depends(get_db),_=Depends(get_current_user)):
     conflictos=[]
     for e in enriched:
         if not e["fecha_inicio"] or not e["fecha_fin"]: continue
-        con=detectar_conflicto(e["id"],e["celula_id"],e["fecha_inicio"],e["fecha_fin"],otras)
+        con = detectar_solape(e["id"], e["celula_id"], e["fecha_inicio"], e["fecha_fin"], otras)
         if con: conflictos.append({"nro_ot":e["nro_ot"],"celula":e["celula_codigo"],
                                    "solapa_con":con,"fecha_ini":e["fecha_inicio"],
                                    "fecha_fin":e["fecha_fin"]})
