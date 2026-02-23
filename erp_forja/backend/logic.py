@@ -94,3 +94,31 @@ def networkdays(start: date, end: date, feriados: Optional[set] = None) -> int:
             count += 1
         d += timedelta(days=1)
     return count
+
+def calcular_acumulados(ordenes: list[dict]) -> dict:
+    """
+    Calcula acumulados básicos de un conjunto de órdenes.
+    Espera lista de dicts con al menos:
+    - cantidad
+    - hs_restantes (opcional)
+
+    Devuelve:
+    {
+        "total_ordenes": int,
+        "total_piezas": float,
+        "total_horas": float
+    }
+    """
+    total_ordenes = len(ordenes)
+    total_piezas = 0
+    total_horas = 0
+
+    for o in ordenes:
+        total_piezas += float(o.get("cantidad", 0))
+        total_horas += float(o.get("hs_restantes", 0))
+
+    return {
+        "total_ordenes": total_ordenes,
+        "total_piezas": total_piezas,
+        "total_horas": total_horas
+    }
