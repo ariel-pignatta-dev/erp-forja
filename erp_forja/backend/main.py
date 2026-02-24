@@ -1,4 +1,3 @@
-print("DATABASE_URL QUE ESTA USANDO:", DATABASE_URL)
 """ERP Forja — Backend FastAPI"""
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -19,19 +18,38 @@ from models import (Base, Usuario, Celula, SKU, Feriado, Orden,
 from logic import (calcular_fecha_fin, fecha_inicio_encadenada,
                    detectar_solape, calcular_acumulados)
 
+# ── DATABASE CONFIG ────────────────────────────────────────────────────────
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL no está configurada en Render")
 
-print("DATABASE_URL QUE ESTA USANDO:", DATABASE_URL)
-SECRET_KEY   = os.getenv("SECRET_KEY","dev-secret")
-ALGORITHM    = "HS256"
-TOKEN_EXPIRE = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES","480"))
+# Debug visible en logs
+print("DATABASE_URL QUE ESTA USANDO:", DATABASE_URL.replace(
+    DATABASE_URL.split("@")[0].split(":")[-1], "****"
+))
 
-engine      = create_engine(DATABASE_URL)
-SessionLocal= sessionmaker(bind=engine,autoflush=False,autocommit=False)
+# Supabase pooler requiere SSL
+if "supabase.com" in DATABASE_URL:
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True,
+        connect_args={"sslmode": "require"}
+    )
+else:
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True
+    )
+
+SessionLocal = sessionmaker(
+    bind=engine,
+    autoflush=False,
+    autocommit=False
+)
+
 Base.metadata.create_all(bind=engine)
+
 
 pwd_ctx = CryptContext(schemes=["bcrypt"])
 oauth2  = OAuth2PasswordBearer(tokenUrl="/auth/token")
