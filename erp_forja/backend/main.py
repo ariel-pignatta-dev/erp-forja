@@ -1,3 +1,12 @@
+import os
+print("DATABASE_URL COMPLETA ===>", os.getenv("DATABASE_URL"))
+
+from sqlalchemy.engine.url import make_url
+
+url = make_url(os.getenv("DATABASE_URL"))
+print("USUARIO QUE ESTA USANDO ===>", url.username)
+
+
 """ERP Forja — Backend FastAPI"""
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
