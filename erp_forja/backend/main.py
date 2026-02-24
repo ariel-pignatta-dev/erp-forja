@@ -2,6 +2,14 @@
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+import os
+
+print("DATABASE_URL REAL ===>", os.getenv("DATABASE_URL"))
+
+from sqlalchemy import create_engine
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+engine = create_engine(DATABASE_URL)
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from datetime import date, datetime, timedelta
