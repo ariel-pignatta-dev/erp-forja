@@ -1,3 +1,4 @@
+print("DATABASE_URL QUE ESTA USANDO:", DATABASE_URL)
 """ERP Forja — Backend FastAPI"""
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
