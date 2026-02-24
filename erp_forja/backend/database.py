@@ -1,3 +1,4 @@
+print("DATABASE_URL REAL:", os.getenv("DATABASE_URL"))
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
 from sqlalchemy import String, Integer, Float, Date, DateTime, Boolean, ForeignKey, Text
