@@ -1,89 +1,35 @@
-import os
-print("DATABASE_URL COMPLETA ===>", os.getenv("DATABASE_URL"))
-
-from sqlalchemy.engine.url import make_url
-
-url = make_url(os.getenv("DATABASE_URL"))
-print("USUARIO QUE ESTA USANDO ===>", url.username)
-
-
 """ERP Forja — Backend FastAPI"""
+
+import os
+from dotenv import load_dotenv
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-import os
-
-print("DATABASE_URL REAL ===>", os.getenv("DATABASE_URL"))
-
 from sqlalchemy import create_engine
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-print("DATABASE_URL COMPLETA ===>", os.getenv("DATABASE_URL"))
-
-from sqlalchemy.engine.url import make_url
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
-
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-if not DATABASE_URL:
-    raise RuntimeError("DATABASE_URL no está configurada en Render")
-
-# Debug sin mostrar password
-print("DATABASE_URL QUE ESTA USANDO:",
-      DATABASE_URL.replace(
-          DATABASE_URL.split("@")[0].split(":")[-1], "****"
-      )
-)
-
-# Configuración correcta para Supabase
-if "supabase.com" in DATABASE_URL:
-    engine = create_engine(
-        DATABASE_URL,
-        pool_pre_ping=True,
-        connect_args={"sslmode": "require"}
-    )
-else:
-    engine = create_engine(
-        DATABASE_URL,
-        pool_pre_ping=True
-    )
-
-SessionLocal = sessionmaker(
-    bind=engine,
-    autoflush=False,
-    autocommit=False
-)
 from sqlalchemy.orm import Session, sessionmaker
 from datetime import date, datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
-import os, json, math
-from dotenv import load_dotenv
+import json, math
 
+# ── LOAD ENV ─────────────────────────────────────────
 load_dotenv()
-from models import (Base, Usuario, Celula, SKU, Feriado, Orden,
-                    CargaAvance, AuditLog, EstadoOrden, RolUsuario)
-from logic import (calcular_fecha_fin, fecha_inicio_encadenada,
-                   detectar_solape, calcular_acumulados)
 
-# ── DATABASE CONFIG ────────────────────────────────────────────────────────
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL no está configurada en Render")
 
-# Debug visible en logs
-print("DATABASE_URL QUE ESTA USANDO:", DATABASE_URL.replace(
-    DATABASE_URL.split("@")[0].split(":")[-1], "****"
-))
+print("DATABASE_URL QUE ESTA USANDO:",
+      DATABASE_URL.replace(
+          DATABASE_URL.split("@")[0].split(":")[-1],
+          "****"
+      )
+)
 
-# Supabase pooler requiere SSL
+# ── DATABASE CONFIG ─────────────────────────────────
 if "supabase.com" in DATABASE_URL:
     engine = create_engine(
         DATABASE_URL,
@@ -102,8 +48,12 @@ SessionLocal = sessionmaker(
     autocommit=False
 )
 
-Base.metadata.create_all(bind=engine)
+from models import (Base, Usuario, Celula, SKU, Feriado, Orden,
+                    CargaAvance, AuditLog, EstadoOrden, RolUsuario)
+from logic import (calcular_fecha_fin, fecha_inicio_encadenada,
+                   detectar_solape, calcular_acumulados)
 
+Base.metadata.create_all(bind=engine)
 
 pwd_ctx = CryptContext(schemes=["bcrypt"])
 oauth2  = OAuth2PasswordBearer(tokenUrl="/auth/token")
