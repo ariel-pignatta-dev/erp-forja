@@ -16,10 +16,47 @@ import os
 print("DATABASE_URL REAL ===>", os.getenv("DATABASE_URL"))
 
 from sqlalchemy import create_engine
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+print("DATABASE_URL COMPLETA ===>", os.getenv("DATABASE_URL"))
+
+from sqlalchemy.engine.url import make_url
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 DATABASE_URL = os.getenv("DATABASE_URL")
-engine = create_engine(DATABASE_URL)
-from sqlalchemy import create_engine
+
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL no está configurada en Render")
+
+# Debug sin mostrar password
+print("DATABASE_URL QUE ESTA USANDO:",
+      DATABASE_URL.replace(
+          DATABASE_URL.split("@")[0].split(":")[-1], "****"
+      )
+)
+
+# Configuración correcta para Supabase
+if "supabase.com" in DATABASE_URL:
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True,
+        connect_args={"sslmode": "require"}
+    )
+else:
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True
+    )
+
+SessionLocal = sessionmaker(
+    bind=engine,
+    autoflush=False,
+    autocommit=False
+)
 from sqlalchemy.orm import Session, sessionmaker
 from datetime import date, datetime, timedelta
 from typing import Optional
