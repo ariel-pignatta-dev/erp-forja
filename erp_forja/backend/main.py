@@ -54,6 +54,11 @@ from logic import (calcular_fecha_fin, fecha_inicio_encadenada,
                    detectar_solape, calcular_acumulados)
 
 Base.metadata.create_all(bind=engine)
+# ── SECURITY CONFIG ─────────────────────────
+
+SECRET_KEY = os.getenv("SECRET_KEY", "super-secret-key-change-this")
+ALGORITHM = "HS256"
+TOKEN_EXPIRE = 60 * 8  # 8 horas
 
 pwd_ctx = CryptContext(schemes=["bcrypt"])
 oauth2  = OAuth2PasswordBearer(tokenUrl="/auth/token")
